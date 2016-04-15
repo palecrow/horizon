@@ -88,20 +88,14 @@
 
     function perform(instance) {
       var modalParams = {
-        controller: 'horizon.app.core.instances.actions.FormModalController as ctrl',
-        templateUrl: basePath + 'instances/actions/form-modal.html',
+        templateUrl: basePath + 'instances/actions/create-snapshot.html',
+        controller: "horizon.app.core.instances.actions.CreateSnapshotController as ctrl",
         resolve: {
           context: function() {
             return {
-              title: gettext("Create Instance Snapshot"),
-              cancel: gettext("Cancel"),
-              submit: gettext("Submit"),
-              templateUrl: basePath + 'instances/actions/create-snapshot.html',
-              snapshot: {
-                name: undefined,
-                instance_id: instance.id
-              }
-            };
+              name: undefined,
+              instance_id: instance.id
+            }
           }
         }
       };
@@ -110,10 +104,16 @@
     }
 
     function onSubmit(context) {
-      var snapshot = context.snapshot;
-      newSnapshotName = snapshot.name;
+      // The nova call doesn't return the name of the newly created snapshot.
+      // Instead, remember it so we can display it in the success message.
+      newSnapshotName = context.name;
+
       waitSpinner.showModalSpinner(gettext('Creating Snapshot'));
-      return nova.createServerSnapshot(context.snapshot).then(onSuccess, onFailure);
+
+      return nova.createServerSnapshot({
+        name: context.name,
+        instance_id: context.instance_id
+      }).then(onSuccess, onFailure);
     }
 
     function onCancel(response) {

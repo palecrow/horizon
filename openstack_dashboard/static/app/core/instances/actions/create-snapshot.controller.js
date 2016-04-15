@@ -19,38 +19,49 @@
 
   /**
    * @ngdoc controller
-   * @name FormModalController
+   * @name CreateSnapshotController
    *
    * @param(object) modal instance from angular-bootstrap
    * @param(object) context object provided by the user
    *
    * @description
-   * Horizon's controller for modal dialog.
-   * Passes context along to the template.
+   * Controller for create snapshot action modal.
    * If user presses cancel button or closes dialog, modal gets dismissed.
-   * If user presses submit button, modal gets closed.
-   * This controller is automatically included in modalService.
+   * If user presses submit button, form input is validated then the modal
+   * is closed and the context object is passed back so that the caller can
+   * use any of the inputs.
    */
   angular
-    .module('horizon.app.core.instances')
-    .controller('horizon.app.core.instances.actions.FormModalController', FormModalController);
+    .module('horizon.app.core.instances.actions')
+    .controller('horizon.app.core.instances.actions.CreateSnapshotController', CreateSnapshotController);
 
-  FormModalController.$inject = [
+  CreateSnapshotController.$inject = [
     '$modalInstance',
     'context'
   ];
 
-  function FormModalController($modalInstance, context) {
+  function CreateSnapshotController($modalInstance, context) {
     var ctrl = this;
+    ctrl.submit = submit;
+    ctrl.cancel = cancel;
+
+    // Contains any data modified by the form. Will be passed back from the
+    // modal instance close and dismiss functions.
     ctrl.context = context;
-    ctrl.submit = function(form) {
-      if ( form.$valid ) {
+
+    function submit() {
+      ctrl.form.$setSubmitted();
+      if (ctrl.form.$valid ) {
         $modalInstance.close(context);
       }
     };
-    ctrl.cancel = function() {
-      $modalInstance.dismiss('cancel');
+
+    function cancel() {
+      $modalInstance.dismiss(context);
     };
-  } // end of function
+
+    return ctrl;
+
+  }
 
 })();
