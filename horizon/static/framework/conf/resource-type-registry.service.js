@@ -428,6 +428,7 @@
     }
 
     var resourceTypes = {};
+    var slugs = {}; // Used only for Django interactions
     var defaultDrawerTemplateUrl = false;
     var defaultDetailsTemplateUrl = false;
     var registry = {
@@ -437,8 +438,13 @@
       setDefaultDrawerTemplateUrl: setDefaultDrawerTemplateUrl,
       getDefaultDrawerTemplateUrl: getDefaultDrawerTemplateUrl,
       setDefaultDetailsTemplateUrl: setDefaultDetailsTemplateUrl,
-      getDefaultDetailsTemplateUrl: getDefaultDetailsTemplateUrl
+      getDefaultDetailsTemplateUrl: getDefaultDetailsTemplateUrl,
+      getTypeBySlug: getTypeBySlug
     };
+
+    function getTypeBySlug(slug) {
+      return slugs[slug];
+    }
 
     function getDefaultDrawerTemplateUrl() {
       return defaultDrawerTemplateUrl;
@@ -477,12 +483,15 @@
      * If a configuration is supplied, the resource type is extended to
      * use the configuration's properties.
      */
-    function getResourceType(type, config) {
+    function getResourceType(type, config, slug) {
       if (!resourceTypes.hasOwnProperty(type)) {
         resourceTypes[type] = new ResourceType(type);
       }
       if (angular.isDefined(config)) {
         angular.extend(resourceTypes[type], config);
+      }
+      if (slug) {
+        slugs[slug] = type;
       }
       return resourceTypes[type];
     }

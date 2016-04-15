@@ -45,7 +45,7 @@
   function run(registry, glance, imageResourceType) {
     registry.getResourceType(imageResourceType, {
       names: [gettext('Image'), gettext('Images')]
-    })
+    }, 'image')
       .setProperty('checksum', {
         label: gettext('Checksum')
       })

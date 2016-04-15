@@ -75,9 +75,6 @@
     registry.getResourceType('OS::Glance::Metadef', {
       names: [gettext('Metadata Definition'), gettext('Metadata Definitions')]
     });
-    registry.getResourceType('OS::Nova::Server', {
-      names: [gettext('Server'), gettext('Servers')]
-    });
     registry.getResourceType('OS::Nova::Flavor', {
       names: [gettext('Flavor'), gettext('Flavors')]
     });

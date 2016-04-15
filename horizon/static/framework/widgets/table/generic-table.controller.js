@@ -28,12 +28,7 @@
   function controller($routeParams, $scope, registry) {
     var ctrl = this;
 
-    //ctrl.params = $routeParams;
-    var hack = {
-      'instance': 'OS::Nova::Server',
-      'image': 'OS::Glance::Image'
-    }; 
-    var resourceTypeName = hack[$routeParams.type];
+    var resourceTypeName = registry.getTypeBySlug($routeParams.type);
     ctrl.resourceType = registry.getResourceType(resourceTypeName);
     ctrl.resourceType.listFunction().then(onLoad);
     ctrl.items = [];
