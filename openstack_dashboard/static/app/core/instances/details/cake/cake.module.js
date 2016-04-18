@@ -19,43 +19,34 @@
 
   /**
    * @ngdoc overview
-   * @ngname horizon.app.core.instances.details
+   * @ngname horizon.app.core.instances.additonal-details
    *
    * @description
    * Provides details features for instances.
    */
-  angular.module('horizon.app.core.instances.details',
+  angular.module('horizon.app.core.instances.details.cake',
     ['horizon.framework.conf', 'horizon.app.core'])
     .run(run);
 
   run.$inject = [
     'horizon.app.core.instances.resourceType',
-    'horizon.app.core.openstack-service-api.nova',
     'horizon.app.core.instances.basePath',
     'horizon.framework.conf.resource-type-registry.service'
   ];
 
   function run(
     instanceResourceType,
-    novaApi,
     basePath,
     registry
   ) {
     var resourceType = registry.getResourceType(instanceResourceType);
-    resourceType
-      .setLoadFunction(loadFunction)
-      .setDrawerTemplateUrl(basePath + 'details/drawer.html');
 
     resourceType.detailsViews
       .append({
-        id: 'instanceDetailsOverview',
-        name: gettext('Overview'),
-        template: basePath + 'details/overview.html'
+        id: 'instanceDetailsConsole',
+        name: gettext('Cake'),
+        template: basePath + 'details/cake/cake.html'
       });
-
-    function loadFunction(identifier) {
-      return novaApi.getServer(identifier);
-    }
   }
 
 })();
