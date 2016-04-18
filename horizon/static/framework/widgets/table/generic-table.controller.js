@@ -28,7 +28,7 @@
   function controller($routeParams, $scope, registry) {
     var ctrl = this;
 
-    var resourceTypeName = registry.getTypeBySlug($routeParams.slug);
+    var resourceTypeName = registry.getTypeNameBySlug($routeParams.slug);
     ctrl.resourceType = registry.getResourceType(resourceTypeName);
     ctrl.resourceType.listFunction().then(onLoad);
     ctrl.items = [];

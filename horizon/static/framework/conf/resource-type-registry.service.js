@@ -428,7 +428,10 @@
     }
 
     var resourceTypes = {};
-    var slugs = {}; // Used only for Django interactions
+    // The slugs are only used to align Django routes with heat
+    // type names.  In a context without Django routing this is
+    // not needed.
+    var slugs = {};
     var defaultDrawerTemplateUrl = false;
     var defaultDetailsTemplateUrl = false;
     var registry = {
@@ -439,11 +442,17 @@
       getDefaultDrawerTemplateUrl: getDefaultDrawerTemplateUrl,
       setDefaultDetailsTemplateUrl: setDefaultDetailsTemplateUrl,
       getDefaultDetailsTemplateUrl: getDefaultDetailsTemplateUrl,
-      getTypeBySlug: getTypeBySlug
+      setSlug: setSlug,
+      getTypeNameBySlug: getTypeNameBySlug
     };
 
-    function getTypeBySlug(slug) {
+    function getTypeNameBySlug(slug) {
       return slugs[slug];
+    }
+
+    function setSlug(slug, typeName) {
+      slugs[slug] = typeName;
+      return this;
     }
 
     function getDefaultDrawerTemplateUrl() {
@@ -483,15 +492,12 @@
      * If a configuration is supplied, the resource type is extended to
      * use the configuration's properties.
      */
-    function getResourceType(type, config, slug) {
+    function getResourceType(type, config) {
       if (!resourceTypes.hasOwnProperty(type)) {
         resourceTypes[type] = new ResourceType(type);
       }
       if (angular.isDefined(config)) {
         angular.extend(resourceTypes[type], config);
-      }
-      if (slug) {
-        slugs[slug] = type;
       }
       return resourceTypes[type];
     }
