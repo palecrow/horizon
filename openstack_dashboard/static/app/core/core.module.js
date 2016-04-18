@@ -61,7 +61,7 @@
         templateUrl: $windowProvider.$get().STATIC_URL +
           'framework/widgets/details/routed-details-view.html'
       })
-      .when('/project/ng:type/', {
+      .when('/project/ng:slug/', {
         templateUrl: $windowProvider.$get().STATIC_URL +
           'framework/widgets/table/generic-table.html'
       });
@@ -74,9 +74,6 @@
     // As a model, the Images registration happens in the images module.
     registry.getResourceType('OS::Glance::Metadef', {
       names: [gettext('Metadata Definition'), gettext('Metadata Definitions')]
-    });
-    registry.getResourceType('OS::Nova::Server', {
-      names: [gettext('Server'), gettext('Servers')]
     });
     registry.getResourceType('OS::Nova::Flavor', {
       names: [gettext('Flavor'), gettext('Flavors')]

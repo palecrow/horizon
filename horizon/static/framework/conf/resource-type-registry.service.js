@@ -428,6 +428,10 @@
     }
 
     var resourceTypes = {};
+    // The slugs are only used to align Django routes with heat
+    // type names.  In a context without Django routing this is
+    // not needed.
+    var slugs = {};
     var defaultDrawerTemplateUrl = false;
     var defaultDetailsTemplateUrl = false;
     var registry = {
@@ -437,8 +441,19 @@
       setDefaultDrawerTemplateUrl: setDefaultDrawerTemplateUrl,
       getDefaultDrawerTemplateUrl: getDefaultDrawerTemplateUrl,
       setDefaultDetailsTemplateUrl: setDefaultDetailsTemplateUrl,
-      getDefaultDetailsTemplateUrl: getDefaultDetailsTemplateUrl
+      getDefaultDetailsTemplateUrl: getDefaultDetailsTemplateUrl,
+      setSlug: setSlug,
+      getTypeNameBySlug: getTypeNameBySlug
     };
+
+    function getTypeNameBySlug(slug) {
+      return slugs[slug];
+    }
+
+    function setSlug(slug, typeName) {
+      slugs[slug] = typeName;
+      return this;
+    }
 
     function getDefaultDrawerTemplateUrl() {
       return defaultDrawerTemplateUrl;

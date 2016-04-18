@@ -43,7 +43,7 @@
   ];
 
   function run(registry, glance, imageResourceType) {
-    registry.getResourceType(imageResourceType, {
+    registry.setSlug('image', imageResourceType).getResourceType(imageResourceType, {
       names: [gettext('Image'), gettext('Images')]
     })
       .setProperty('checksum', {

@@ -46,7 +46,7 @@
   ];
 
   function run(registry, nova, instanceResourceType) {
-    registry.getResourceType(instanceResourceType, {
+    registry.setSlug('instance', instanceResourceType).getResourceType(instanceResourceType, {
       names: [gettext('Server'), gettext('Servers')]
     })
       .setListFunction(listFunction)
