@@ -61,7 +61,7 @@
         templateUrl: $windowProvider.$get().STATIC_URL +
           'framework/widgets/details/routed-details-view.html'
       })
-      .when('/project/ng:type/', {
+      .when('/project/ng:slug/', {
         templateUrl: $windowProvider.$get().STATIC_URL +
           'framework/widgets/table/generic-table.html'
       });
