@@ -45,9 +45,8 @@
   ];
 
   function run(registry, resourceType) {
-    registry.getResourceType(resourceType, {
-      names: [gettext('Network'), gettext('Networks')]
-    });
+    registry.getResourceType(resourceType)
+      .setNames(gettext('Network'), gettext('Networks'));
   }
 
 })();

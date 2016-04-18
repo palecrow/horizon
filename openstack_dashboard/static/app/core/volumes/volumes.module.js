@@ -45,9 +45,8 @@
   ];
 
   function run(registry, resourceType) {
-    registry.getResourceType(resourceType, {
-      names: [gettext('Volume'), gettext('Volumes')]
-    });
+    registry.getResourceType(resourceType)
+      .setNames(gettext('Volume'), gettext('Volumes'));
   }
 
 })();
