@@ -15,6 +15,6 @@
 FEATURE = 'additional_instances_views'
 
 # If set to True, this settings file will not be added to the settings.
-DISABLED = False
+DISABLED = True
 
 ADD_ANGULAR_MODULES = ['horizon.app.core.instances.details.cake']
