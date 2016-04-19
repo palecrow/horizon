@@ -72,63 +72,44 @@
     // respective module declarations.  However, until they are more fully
     // fleshed out there's no reason to pollute the directory/file structure.
     // As a model, the Images registration happens in the images module.
-    registry.getResourceType('OS::Glance::Metadef', {
-      names: [gettext('Metadata Definition'), gettext('Metadata Definitions')]
-    });
-    registry.getResourceType('OS::Nova::Flavor', {
-      names: [gettext('Flavor'), gettext('Flavors')]
-    });
-    registry.getResourceType('OS::Nova::Keypair', {
-      names: [gettext('Key Pair'), gettext('Key Pairs')]
-    });
-    registry.getResourceType('OS::Designate::Zone', {
-      names: [gettext('DNS Domain'), gettext('DNS Domains')]
-    });
-    registry.getResourceType('OS::Designate::RecordSet', {
-      names: [gettext('DNS Record'), gettext('DNS Records')]
-    });
-    registry.getResourceType('OS::Cinder::Backup', {
-      names: [gettext('Volume Backup'), gettext('Volume Backups')]
-    });
-    registry.getResourceType('OS::Cinder::Snapshot', {
-      names: [gettext('Volume Snapshot'), gettext('Volume Snapshots')]
-    });
-    registry.getResourceType(VOLUME_RESOURCE_TYPE, {
-      names: [gettext('Volume'), gettext('Volumes')]
-    });
-    registry.getResourceType('OS::Nova::Flavor', {
-      names: [gettext('Flavor'), gettext('Flavors')]
-    });
-    registry.getResourceType('OS::Swift::Account', {
-      names: [gettext('Object Account'), gettext('Object Accounts')]
-    });
-    registry.getResourceType('OS::Swift::Container', {
-      names: [gettext('Object Container'), gettext('Object Containers')]
-    });
-    registry.getResourceType('OS::Swift::Object', {
-      names: [gettext('Object'), gettext('Objects')]
-    });
-    registry.getResourceType('OS::Neutron::HealthMonitor', {
-      names: [gettext('Network Health Monitor'), gettext('Network Health Monitors')]
-    });
-    registry.getResourceType('OS::Neutron::Net', {
-      names: [gettext('Network'), gettext('Networks')]
-    });
-    registry.getResourceType('OS::Neutron::Pool', {
-      names: [gettext('Load Balancer Pool'), gettext('Load Balancer Pools')]
-    });
-    registry.getResourceType('OS::Neutron::PoolMember', {
-      names: [gettext('Load Balancer Pool Member'), gettext('Load Balancer Pool Members')]
-    });
-    registry.getResourceType('OS::Neutron::Port', {
-      names: [gettext('Network Port'), gettext('Network Ports')]
-    });
-    registry.getResourceType('OS::Neutron::Router', {
-      names: [gettext('Network Router'), gettext('Network Routers')]
-    });
-    registry.getResourceType('OS::Neutron::Subnet', {
-      names: [gettext('Network Subnet'), gettext('Network Subnets')]
-    });
+    registry.getResourceType('OS::Glance::Metadef')
+      .setNames(gettext('Metadata Definition'), gettext('Metadata Definitions'));
+    registry.getResourceType('OS::Nova::Flavor')
+      .setNames(gettext('Flavor'), gettext('Flavors'));
+    registry.getResourceType('OS::Nova::Keypair')
+      .setNames(gettext('Key Pair'), gettext('Key Pairs'));
+    registry.getResourceType('OS::Designate::Zone')
+      .setNames(gettext('DNS Domain'), gettext('DNS Domains'));
+    registry.getResourceType('OS::Designate::RecordSet')
+      .setNames(gettext('DNS Record'), gettext('DNS Records'));
+    registry.getResourceType('OS::Cinder::Backup')
+      .setNames(gettext('Volume Backup'), gettext('Volume Backups'));
+    registry.getResourceType('OS::Cinder::Snapshot')
+      .setNames(gettext('Volume Snapshot'), gettext('Volume Snapshots'));
+    registry.getResourceType(VOLUME_RESOURCE_TYPE)
+      .setNames(gettext('Volume'), gettext('Volumes'));
+    registry.getResourceType('OS::Nova::Flavor')
+      .setNames(gettext('Flavor'), gettext('Flavors'));
+    registry.getResourceType('OS::Swift::Account')
+      .setNames(gettext('Object Account'), gettext('Object Accounts'));
+    registry.getResourceType('OS::Swift::Container')
+      .setNames(gettext('Object Container'), gettext('Object Containers'));
+    registry.getResourceType('OS::Swift::Object')
+      .setNames(gettext('Object'), gettext('Objects'));
+    registry.getResourceType('OS::Neutron::HealthMonitor')
+      .setNames(gettext('Network Health Monitor'), gettext('Network Health Monitors'));
+    registry.getResourceType('OS::Neutron::Net')
+      .setNames(gettext('Network'), gettext('Networks'));
+    registry.getResourceType('OS::Neutron::Pool')
+      .setNames(gettext('Load Balancer Pool'), gettext('Load Balancer Pools'));
+    registry.getResourceType('OS::Neutron::PoolMember')
+      .setNames(gettext('Load Balancer Pool Member'), gettext('Load Balancer Pool Members'));
+    registry.getResourceType('OS::Neutron::Port')
+      .setNames(gettext('Network Port'), gettext('Network Ports'));
+    registry.getResourceType('OS::Neutron::Router')
+      .setNames(gettext('Network Router'), gettext('Network Routers'));
+    registry.getResourceType('OS::Neutron::Subnet')
+      .setNames(gettext('Network Subnet'), gettext('Network Subnets'));
   }
 
 })();

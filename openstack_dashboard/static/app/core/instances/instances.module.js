@@ -46,9 +46,8 @@
   ];
 
   function run(registry, nova, instanceResourceType) {
-    registry.setSlug('instance', instanceResourceType).getResourceType(instanceResourceType, {
-      names: [gettext('Server'), gettext('Servers')]
-    })
+    registry.setSlug('instance', instanceResourceType).getResourceType(instanceResourceType)
+      .setNames(gettext('Server'), gettext('Servers'))
       .setListFunction(listFunction)
       .setProperty('name', {
         label: gettext('Name')

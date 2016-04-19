@@ -43,9 +43,8 @@
   ];
 
   function run(registry, glance, imageResourceType) {
-    registry.setSlug('image', imageResourceType).getResourceType(imageResourceType, {
-      names: [gettext('Image'), gettext('Images')]
-    })
+    registry.setSlug('image', imageResourceType).getResourceType(imageResourceType)
+      .setNames(gettext('Image'), gettext('Images'))
       .setProperty('checksum', {
         label: gettext('Checksum')
       })

@@ -64,6 +64,7 @@
       var properties = {};
       this.setProperty = setProperty;
       this.getName = getName;
+      this.setNames = setNames;
       this.label = label;
       this.format = format;
       this.type = type;
@@ -356,6 +357,24 @@
 
       /**
        * @ngdoc function
+       * @name setNames
+       * @description
+       * Takes in the singular/plural names used for display.
+       * @example
+       ```
+       var resourceType = getResourceType('thing')
+         .setNames(gettext('Thing'), gettext('Things'));
+       });
+
+       ```
+       */
+      function setNames(singular, plural) {
+        this.names = [singular, plural];
+        return this;
+      }
+
+      /**
+       * @ngdoc function
        * @name label
        * @description
        * Returns a human-appropriate label for the given name.
@@ -489,15 +508,10 @@
      * @description
      * Retrieves all information about a resource type.  If the resource
      * type doesn't exist in the registry, this creates a new entry.
-     * If a configuration is supplied, the resource type is extended to
-     * use the configuration's properties.
      */
-    function getResourceType(type, config) {
+    function getResourceType(type) {
       if (!resourceTypes.hasOwnProperty(type)) {
         resourceTypes[type] = new ResourceType(type);
-      }
-      if (angular.isDefined(config)) {
-        angular.extend(resourceTypes[type], config);
       }
       return resourceTypes[type];
     }
