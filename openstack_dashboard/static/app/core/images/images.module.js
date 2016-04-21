@@ -130,11 +130,6 @@
             filters: ['imageStatus']
           })
       .append({
-            id: 'filtered_visibility',
-            title: gettext('Visibility'),
-            priority: 2
-          })
-      .append({
             id: 'protected',
             priority: 1,
             filters: ['yesno']
