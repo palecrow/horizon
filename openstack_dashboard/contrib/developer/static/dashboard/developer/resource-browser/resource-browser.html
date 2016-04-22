@@ -1,0 +1,111 @@
+<div ng-repeat="(type, typeData) in ctrl.resourceTypes" class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a ng-if="ctrl.hasTableUrl(type)" ng-href="/{$ ctrl.getTableUrl(type, typeData) $}">
+                <label>{$ typeData.getName() $}</label>
+            </a>
+            <label ng-if="!ctrl.hasTableUrl(type)">{$ typeData.getName() $}</label>
+        </div>
+        <div class="panel-body">
+            <!-- Has generic table view -->
+            <div class="row">
+                <div class="col-xs-4">
+                    <span class="fa" ng-class="ctrl.getSlug(type) ? 'text-success fa-check' : 'text-warning fa-warning'"></span>
+                    <a ng-if="ctrl.hasTableUrl(type)" ng-href="/{$ ctrl.getTableUrl(type, typeData) $}">
+                        Generic Table View
+                    </a>
+                    <span ng-if="!ctrl.hasTableUrl(type)">Generic Table View</span>
+                </div>
+            </div>
+
+            <!-- Has slug -->
+            <div class="row">
+                <div class="col-xs-4">
+                    <span class="fa" ng-class="ctrl.getSlug(type) ? 'text-success fa-check' : 'text-warning fa-warning'"></span>
+                    Slug
+                </div>
+            </div>
+
+            <!-- Has Load function -->
+            <div class="row">
+                <div class="col-xs-4">
+                    <span class="fa" ng-class="typeData.loadFunctionSet ? 'text-success fa-check' : 'text-warning fa-warning'"></span>
+                    Load Function
+                </div>
+            </div>
+
+            <!-- Has List function -->
+            <div class="row">
+                <div class="col-xs-4">
+                    <span class="fa" ng-class="typeData.listFunctionSet ? 'text-success fa-check' : 'text-warning fa-warning'"></span>
+                    List Function
+                </div>
+            </div>
+
+            <!-- Has global actions -->
+            <div class="row">
+                <div class="col-xs-4">
+                    <span class="fa" ng-class="typeData.globalActions.length != 0 ? 'text-success fa-check' : 'text-warning fa-warning'"></span>
+                    Global Actions
+                </div>
+            </div>
+            <div ng-if="typeData.globalActions.length != 0">
+                <div ng-repeat="action in typeData.globalActions">
+                    <div class="row">
+                        <div class="col-xs-3 col-xs-offset-1">
+                            {$ action.template.text $}
+                        </div>
+                        <div class="col-xs-4">
+                        </div>
+                        <div class="col-xs-4">
+                            <input type="button"
+                                   value="{$ action.template.text $}"
+                                   ng-click="ctrl.onActionSelected(typeData, action)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Has item actions -->
+            <div class="row">
+                <div class="col-xs-4">
+                    <span class="fa" ng-class="typeData.itemActions.length != 0 ? 'text-success fa-check' : 'text-warning fa-warning'"></span>
+                    Item Actions
+                </div>
+            </div>
+            <div ng-if="typeData.itemActions.length">
+                <div class="row">
+                    <div class="col-xs-3 col-xs-offset-1">
+                        <div ng-repeat="action in typeData.itemActions">
+                            {$ action.template.text $}
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <form name="resourceIdForm">
+                            <input ng-if="ctrl.testMode == true"
+                                   ng-model="ctrl.resourceId"
+                                   type="text"
+                                   placeholder="Resource ID(s)"/>
+                        </form>
+                    </div>
+                    <div class="col-xs-4">
+                        <div ng-if="ctrl.testMode == true"
+                             ng-repeat="action in typeData.itemActions">
+                            <input
+                                    type="button"
+                                    value="{$ action.template.text $}"
+                                    ng-click="ctrl.onActionSelected(typeData, action)"/>
+                        </div>
+                        <div ng-if="ctrl.testMode == false">
+                            <input ng-if="ctrl.testMode == false"
+                                   type="button"
+                                   value="Select Item(s)"
+                                   ng-click="ctrl.onSelectItems(typeData)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

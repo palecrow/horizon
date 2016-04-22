@@ -71,6 +71,7 @@
       this.setLoadFunction = setLoadFunction;
       this.load = load;
       this.loadFunction = function def() { return Promise.resolve({data: {}}); };
+      this.loadFunctionSet = false;
 
       // These members support the ability of a type to provide a function
       // that, given an object in the structure presented by the
@@ -109,8 +110,10 @@
       }
 
       this.listFunction = angular.noop;
+      this.listFunctionSet = false;
       this.setListFunction = setListFunction;
       function setListFunction(func) {
+        this.listFunctionSet = true;
         this.listFunction = func;
         return this;
       }
@@ -287,6 +290,7 @@
        ```
        */
       function setLoadFunction(func) {
+        this.loadFunctionSet = true;
         this.loadFunction = func;
         return this;
       }
@@ -455,6 +459,7 @@
     var defaultDetailsTemplateUrl = false;
     var registry = {
       getResourceType: getResourceType,
+      getAllResourceTypes: getAllResourceTypes,
       initActions: initActions,
       getGlobalActions: getGlobalActions,
       setDefaultDrawerTemplateUrl: setDefaultDrawerTemplateUrl,
@@ -462,6 +467,7 @@
       setDefaultDetailsTemplateUrl: setDefaultDetailsTemplateUrl,
       getDefaultDetailsTemplateUrl: getDefaultDetailsTemplateUrl,
       setSlug: setSlug,
+      getSlug: getSlug,
       getTypeNameBySlug: getTypeNameBySlug
     };
 
@@ -472,6 +478,16 @@
     function setSlug(slug, typeName) {
       slugs[slug] = typeName;
       return this;
+    }
+    
+    function getSlug(typeName) {
+      // TODO move slug to resource type itself, or simply use heat type as slug
+      var allSlugs = Object.keys(slugs);
+      return allSlugs.find(function(element) {
+        if (slugs[element] === typeName) {
+          return true;
+        }
+      });
     }
 
     function getDefaultDrawerTemplateUrl() {
@@ -514,6 +530,16 @@
         resourceTypes[type] = new ResourceType(type);
       }
       return resourceTypes[type];
+    }
+
+    /*
+     * @ngdoc function
+     * @name getAllResourceTypes
+     * @description
+     * Returns an array of all registered ResourceType objects.
+     */
+    function getAllResourceTypes() {
+      return resourceTypes;
     }
 
     /*
