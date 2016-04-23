@@ -37,6 +37,7 @@
       'horizon.app.core.metadata',
       'horizon.app.core.networks',
       'horizon.app.core.openstack-service-api',
+      'horizon.app.core.os-designate-zone', // TODO move to contrib
       'horizon.app.core.volumes',
       'horizon.app.core.volume-snapshots',
       'horizon.app.core.workflow',
@@ -78,8 +79,6 @@
       .setNames(gettext('Flavor'), gettext('Flavors'));
     registry.getResourceType('OS::Nova::Keypair')
       .setNames(gettext('Key Pair'), gettext('Key Pairs'));
-    registry.getResourceType('OS::Designate::Zone')
-      .setNames(gettext('DNS Domain'), gettext('DNS Domains'));
     registry.getResourceType('OS::Designate::RecordSet')
       .setNames(gettext('DNS Record'), gettext('DNS Records'));
     registry.getResourceType('OS::Cinder::Backup')

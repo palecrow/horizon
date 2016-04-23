@@ -37,20 +37,88 @@
     var ctrl = this;
     ctrl.testMode = true;
     ctrl.resourceTypes = registryService.getAllResourceTypes();
-    ctrl.toggleTestMode = toggleTestMode;
     ctrl.onActionSelected = onActionSelected;
-    ctrl.onSelectItems = onSelectItems;
     ctrl.resourceId = undefined;
-    ctrl.hasTableUrl = hasTableUrl;
-    ctrl.getTableUrl = getTableUrl;
-    ctrl.getSlug = getSlug;
 
-    function hasTableUrl(type) {
-      return getSlug(type);
+    ctrl.fullySupported = fullySupported;
+
+    ctrl.supportsGenericTableView = supportsGenericTableView;
+    ctrl.getName = getName;
+    ctrl.getSlug = getSlug;
+    ctrl.hasListFunction = hasListFunction;
+    ctrl.hasProperties = hasProperties;
+    ctrl.hasTableColumns = hasTableColumns;
+    ctrl.hasDrawerView = hasDrawerView;
+    ctrl.getTableUrl = getTableUrl;
+    ctrl.getTableColumnsLabel = getTableColumnsLabel;
+    ctrl.getPropertiesLabel = getPropertiesLabel;
+
+    ctrl.supportsGenericDetailsView = supportsGenericDetailsView;
+    ctrl.hasLoadFunction = hasLoadFunction;
+    ctrl.hasDetailView = hasDetailView;
+    ctrl.getDetailsViewsLabel = getDetailsViewsLabel;
+
+    ctrl.hasGlobalActions = hasGlobalActions;
+
+    ctrl.hasItemActions = hasItemActions;
+
+    function fullySupported(typeData) {
+      return (supportsGenericDetailsView(typeData) &&
+          supportsGenericTableView(typeData) &&
+          hasDrawerView(typeData) &&
+          hasGlobalActions(typeData) &&
+          hasItemActions(typeData));
     }
 
+    function getName(typeData) {
+      return typeData.getName();
+    }
+    
     function getSlug(type) {
       return registryService.getSlug(type);
+    }
+    
+    function supportsGenericTableView(typeData) {
+      return (getSlug(typeData.type) &&
+        getName(typeData) &&
+        hasListFunction(typeData) &&
+        hasProperties(typeData) &&
+        hasTableColumns(typeData) &&
+        hasDrawerView(typeData));
+    }
+
+    function hasListFunction(typeData) {
+      return typeData.listFunctionSet;
+    }
+    
+    function hasProperties(typeData) {
+      return getProperties(typeData).length > 0;
+    }
+    
+    function hasTableColumns(typeData) {
+      return typeData.tableColumns.length > 0;
+    }
+
+    function getProperties(typeData) {
+      return Object.keys(typeData.getProperties());
+    }
+
+    function getPropertiesLabel(typeData) {
+      var properties = typeData.getProperties();
+      var keys = Object.keys(properties);
+      return keys.map(getLabel).join(", ");
+
+      function getLabel(item) {
+        return properties[item].label;
+      }
+    }
+    
+    function getTableColumnsLabel(typeData) {
+      return typeData.tableColumns.map(getColumnId).join(", ");
+
+      function getColumnId(item) {
+        return item.id;
+      }
     }
     
     function getTableUrl(type, typeData) {
@@ -61,9 +129,38 @@
       }
       return url;
     }
+    
+    function supportsGenericDetailsView(typeData) {
+      return (hasDetailView(typeData) &&
+        hasLoadFunction(typeData));
+    }
+    
+    function hasDetailView(typeData) {
+      return typeData.detailsViews.length > 0 
+    }
 
-    function toggleTestMode() {
-      ctrl.testMode = !ctrl.testMode;
+    function getDetailsViewsLabel(typeData) {
+      return typeData.detailsViews.map(getName).join(", ");
+
+      function getName(item) {
+        return item.name;
+      }
+    }
+
+    function hasLoadFunction(typeData) {
+      return typeData.loadFunctionSet;
+    }
+    
+    function hasGlobalActions(typeData) {
+      return typeData.globalActions.length != 0 
+    }
+    
+    function hasItemActions(typeData) {
+      return typeData.itemActions.length != 0;
+    }
+    
+    function hasDrawerView(typeData) {
+      return typeData.drawerTemplateUrl;
     }
 
     function onActionSelected(resourceType, action) {
@@ -90,11 +187,6 @@
       function loadFailed(reason) {
         window.alert(gettext("resource load failed" + ":" + reason));
       }
-    }
-
-    function onSelectItems(resourceType) {
-      var url = getTableUrl(resourceType.type);
-      $location.path(url);
     }
   }
 

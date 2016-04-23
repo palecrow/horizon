@@ -63,6 +63,7 @@
       // described in the setProperty() function below.
       var properties = {};
       this.setProperty = setProperty;
+      this.getProperties = getProperties;
       this.getName = getName;
       this.setNames = setNames;
       this.label = label;
@@ -225,6 +226,10 @@
       function setProperty(name, prop) {
         properties[name] = prop;
         return this;
+      }
+
+      function getProperties() {
+        return angular.copy(properties);
       }
 
       /**
