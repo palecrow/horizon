@@ -19,35 +19,35 @@
 
   /**
    * @ngdoc overview
-   * @ngname horizon.app.core.os-designate-zone
+   * @ngname horizon.app.core.os-designate-recordset
    *
    * @description
    * Provides all of the services and widgets required
    * to support and display DNS (designate) zone related content.
    */
   angular
-    .module('horizon.app.core.os-designate-zone', ['ngRoute',
-      'horizon.app.core.os-designate-zone.actions', 'horizon.app.core.os-designate-zone.details'])
-    .constant('horizon.app.core.os-designate-zone.resourceType', 'OS::Designate::Zone')
+    .module('horizon.app.core.os-designate-recordset', ['ngRoute',
+      'horizon.app.core.os-designate-recordset.actions', 'horizon.app.core.os-designate-recordset.details'])
+    .constant('horizon.app.core.os-designate-recordset.resourceType', 'OS::Designate::RecordSet')
     .config(config)
     .run(run);
 
   config.$inject = [ '$provide', '$windowProvider' ];
 
   function config($provide, $windowProvider) {
-    var path = $windowProvider.$get().STATIC_URL + 'app/core/os-designate-zone/';
-    $provide.constant('horizon.app.core.os-designate-zone.basePath', path);
+    var path = $windowProvider.$get().STATIC_URL + 'app/core/os-designate-recordset/';
+    $provide.constant('horizon.app.core.os-designate-recordset.basePath', path);
   }
 
   run.$inject = [
     'horizon.framework.conf.resource-type-registry.service',
     'horizon.app.core.openstack-service-api.designate',
-    'horizon.app.core.os-designate-zone.resourceType'
+    'horizon.app.core.os-designate-recordset.resourceType'
   ];
 
   function run(registry, designate, resourceTypeString) {
     registry.setSlug(resourceTypeString, resourceTypeString).getResourceType(resourceTypeString)
-      .setNames(gettext('DNS Zone'), gettext('DNS Zones'))
+      .setNames(gettext('DNS Record Set'), gettext('DNS Record Sets'))
       .setListFunction(listFunction)
       .setProperty('name', {
         label: gettext('Name')
@@ -57,11 +57,11 @@
         id: 'name',
         priority: 1,
         sortDefault: true,
-        template: '<a ng-href="{$ \'project/ngdetails/OS::Designate::Zone/\' + item.id $}">{$ item.name $}</a>'
+        template: '<a ng-href="{$ \'project/ngdetails/OS::Designate::RecordSet/\' + item.id $}">{$ item.name $}</a>'
       });
 
     function listFunction() {
-      return designate.getZones();
+      return designate.getRecordSets();
     }
   }
 

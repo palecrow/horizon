@@ -45,6 +45,7 @@
     /**
      * View-specific model (Public)
      */
+    ctrl.collapsed = true;
     ctrl.resourceId = undefined;
     ctrl.fullySupported = fullySupported();
     ctrl.typeLabel = type;
