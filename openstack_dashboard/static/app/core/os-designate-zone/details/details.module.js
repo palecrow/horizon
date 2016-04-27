@@ -43,8 +43,8 @@
   ) {
     var resourceType = registry.getResourceType(zoneResourceType);
     resourceType
-      .setLoadFunction(loadFunction)
-      .setDrawerTemplateUrl(basePath + 'details/drawer.html');
+      .setLoadFunction(loadFunction);
+//      .setDrawerTemplateUrl(basePath + 'details/drawer.html');
 
     resourceType.detailsViews
       .append({

@@ -36,7 +36,7 @@
   function designateAPI(apiService, toastService) {
     var service = {
       getZone: getZone,
-      getZones: getZones
+      listZones: listZones
     };
 
     return service;
@@ -76,7 +76,7 @@
      * For example, "status": "available" will show all available volumes.
      * @returns {Object} The result of the API call
      */
-    function getZones(params) {
+    function listZones(params) {
       var config = params ? {'params': params} : {};
       return apiService.get('/api/designate/zones/', config)
         .error(function () {

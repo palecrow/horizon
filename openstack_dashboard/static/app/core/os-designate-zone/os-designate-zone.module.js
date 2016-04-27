@@ -48,7 +48,7 @@
   function run(registry, designate, resourceTypeString) {
     registry.setSlug(resourceTypeString, resourceTypeString).getResourceType(resourceTypeString)
       .setNames(gettext('DNS Zone'), gettext('DNS Zones'))
-      .setListFunction(listFunction)
+      .setListFunction(listZones)
       .setProperty('name', {
         label: gettext('Name')
       })
@@ -60,8 +60,8 @@
         template: '<a ng-href="{$ \'project/ngdetails/OS::Designate::Zone/\' + item.id $}">{$ item.name $}</a>'
       });
 
-    function listFunction() {
-      return designate.getZones();
+    function listZones() {
+      return designate.listZones();
     }
   }
 
