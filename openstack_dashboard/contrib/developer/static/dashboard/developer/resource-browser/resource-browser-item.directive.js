@@ -19,23 +19,29 @@
 
   angular
     .module('horizon.dashboard.developer.resource-browser')
-    .controller('horizon.dashboard.developer.resource-browser.ResourceBrowserController', ResourceBrowserController);
+    .directive('resourceBrowserItem', resourceBrowserItem);
 
-  ResourceBrowserController.$inject = [
-    '$location',
-    '$scope',
-    'horizon.framework.conf.resource-type-registry.service',
-  ];
+    resourceBrowserItem.$inject = ['horizon.dashboard.developer.basePath'];
 
-  /**
-   * @ngdoc controller
-   * @name horizon.dashboard.developer.resource-browser:ResourceBrowserController
-   * @description
-   * This controller allows the launching of any actions registered for resource types
-   */
-  function ResourceBrowserController($location, $scope, registryService) {
-    var ctrl = this;
-    ctrl.resourceTypes = registryService.getAllResourceTypes();
-  }
+    /**
+     * @ngdoc directive
+     * @name resource-browser-item
+     * @description
+     * A detailed view of resource registration data
+     */
 
+    function resourceBrowserItem(path) {
+      var directive = {
+        restrict: 'E',
+        templateUrl: path + 'resource-browser/resource-browser-item.html',
+        scope: {
+          registryResourceType: '='
+        },
+        controller: 'horizon.dashboard.developer.resource-browser.ResourceBrowserItemController as ctrl',
+        bindToController: true
+      };
+
+      return directive;
+    }
 })();
+
