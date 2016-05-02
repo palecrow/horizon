@@ -22,27 +22,27 @@
  *
  */
 
-  angular.module('horizon.framework.widgets.magic-search')
+  angular.module('horizon.framework.widgets.legacy-magic-search')
     .controller('MagicSearchController', magicSearchController);
 
   magicSearchController.$inject = ['$scope', '$element', '$timeout', '$window',
-    'horizon.framework.widgets.magic-search.service'];
+    'horizon.framework.widgets.legacy-magic-search.service'];
 
   function magicSearchController($scope, $element, $timeout, $window, service) {
     var ctrl = this;
+    var searchInput = $element.find('.search-input');
+    ctrl.mainPromptString = $scope.strings ? $scope.strings.prompt : '';
 
-    /**
-     * Public Interface
-     */
-    ctrl.keyDownHandler = keyDownHandler;
-    ctrl.keyUpHandler = keyUpHandler;
-    ctrl.keyPressHandler = keyPressHandler;
-    ctrl.searchMainClickHandler = searchMainClickHandler;
-    ctrl.facets_param = ctrl.facets_param || [];
-    ctrl.mainPromptString = ctrl.strings ? ctrl.strings.prompt : '';
     // currentSearch is the list of facets representing the current search
     ctrl.currentSearch = [];
     ctrl.isMenuOpen = false;
+
+    searchInput.on('keydown', keyDownHandler);
+    searchInput.on('keyup', keyUpHandler);
+    searchInput.on('keypress', keyPressHandler);
+
+    // enable text entry when mouse clicked anywhere in search box
+    $element.find('.search-main-area').on('click', searchMainClickHandler);
 
     // when facet clicked, add 1st part of facet and set up options
     ctrl.facetClicked = facetClickHandler;
@@ -70,24 +70,12 @@
     // facetChoices is the list of all facet choices
     ctrl.facetChoices = [];
 
-    ctrl.searchInputValue = '';
-
-    /**
-     * Private Data
-     */
-    // TODO - Remove this direct element reference from the controller
-    var searchInput = $element.find('.search-input');
-
     initSearch(service.getSearchTermsFromQueryString($window.location.search));
     emitQuery();
 
-    /**
-     * Implementation
-     */
-
     function initSearch(initialSearchTerms) {
       // Initializes both the unused choices and the full list of facets
-      ctrl.facetChoices = service.getFacetChoicesFromFacetsParam(ctrl.facets_param);
+      ctrl.facetChoices = service.getFacetChoicesFromFacetsParam($scope.facets_param);
 
       // resets the facets
       initFacets(initialSearchTerms);
@@ -128,7 +116,7 @@
     }
 
     function enterKeyUp() {
-      var searchVal = ctrl.searchInputValue;
+      var searchVal = searchInput.val();
       // if tag search, treat as regular facet
       if (ctrl.facetSelected && angular.isUndefined(ctrl.facetSelected.options)) {
         var curr = ctrl.facetSelected;
@@ -142,7 +130,8 @@
         // if text search treat as search
         ctrl.currentSearch = ctrl.currentSearch.filter(notTextSearch);
         ctrl.currentSearch.push(service.getTextFacet(searchVal,
-          ctrl.strings ? ctrl.strings.text : ''));
+          $scope.strings ? $scope.strings.text : ''));
+        $scope.$apply();
         setMenuOpen(false);
         setSearchInput('');
         emitTextSearch(searchVal);
@@ -156,9 +145,10 @@
     }
 
     function defaultKeyUp() {
-      var searchVal = ctrl.searchInputValue;
+      var searchVal = searchInput.val();
       if (searchVal === '') {
         ctrl.filteredObj = ctrl.unusedFacetChoices;
+        $scope.$apply();
         emitTextSearch('');
         if (ctrl.facetSelected && angular.isUndefined(ctrl.facetSelected.options)) {
           resetState();
@@ -182,7 +172,7 @@
     }
 
     function keyPressHandler($event) {  // handle character input
-      var searchVal = ctrl.searchInputValue;
+      var searchVal = searchInput.val();
       var key = service.getEventCode($event);
       // Backspace, Delete, Enter, Tab, Escape
       if (key !== 8 && key !== 46 && key !== 13 && key !== 9 && key !== 27) {
@@ -196,6 +186,7 @@
       }
       if (searchVal === '') {
         ctrl.filteredObj = ctrl.unusedFacetChoices;
+        $scope.$apply();
         emitTextSearch('');
         if (ctrl.facetSelected && angular.isUndefined(ctrl.facetSelected.options)) {
           resetState();
@@ -276,8 +267,7 @@
     }
 
     function emitTextSearch(val) {
-      $scope.$emit('textSearch', val, ctrl.filter_keys);
-      ctrl.query = val;
+      $scope.$emit('textSearch', val, $scope.filter_keys);
     }
 
     function emitQuery(removed) {
@@ -323,16 +313,15 @@
       });
     }
 
-    // TODO - Remove this function if timeout isn't actually needed
     function setSearchInput(val) {
       $timeout(function setSearchInputTimeout() {
-        ctrl.searchInputValue = val;
+        searchInput.val(val);
       });
     }
 
     function setPrompt(str) {
       $timeout(function setPromptTimeout() {
-        ctrl.strings.prompt = str;
+        $scope.strings.prompt = str;
       });
     }
 
@@ -361,7 +350,7 @@
         setPrompt('');
       }
       ctrl.currentSearch = service.getFacetsFromSearchTerms(searchTerms,
-        ctrl.textSearch, ctrl.strings ? ctrl.strings.text : '', tmpFacetChoices);
+        ctrl.textSearch, $scope.strings ? $scope.strings.text : '', tmpFacetChoices);
       ctrl.filteredObj = ctrl.unusedFacetChoices =
         service.getUnusedFacetChoices(tmpFacetChoices, searchTerms);
 

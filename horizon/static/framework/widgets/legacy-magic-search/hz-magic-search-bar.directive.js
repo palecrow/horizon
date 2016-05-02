@@ -15,7 +15,7 @@
   'use strict';
 
   angular
-    .module('horizon.framework.widgets.magic-search')
+    .module('horizon.framework.widgets.legacy-magic-search')
     .directive('hzMagicSearchBar', hzMagicSearchBar);
 
   hzMagicSearchBar.$inject = ['horizon.framework.widgets.basePath'];
@@ -84,20 +84,54 @@
   function hzMagicSearchBar(basePath) {
 
     var directive = {
+      compile: compile,
       restrict: 'E',
       scope: {
         filterStrings: '=?',
         filterFacets: '=',
         clientFullTextSearch: '=?',
-        query: '='
+        searchSettingsCallback: '=?'
       },
-      templateUrl: basePath + 'magic-search/hz-magic-search-bar.html',
-      controller: "horizon.framework.widgets.magic-search.MagicSearchBarController as ctrl",
-      bindToController: true
+      templateUrl: basePath + 'magic-search/hz-magic-search-bar.html'
     };
 
     return directive;
 
+    //////////
+
+    function link(scope) {
+      scope.clientFullTextSearch = angular.isDefined(scope.clientFullTextSearch)
+        ? scope.clientFullTextSearch
+        : true;
+      // if filterStrings is not defined, set defaults
+      var defaultFilterStrings = {
+        cancel: gettext('Cancel'),
+        prompt: gettext('Click here for filters.'),
+        remove: gettext('Remove'),
+        text: (scope.clientFullTextSearch ?
+          gettext('Search in current results') :
+          gettext('Full Text Search'))
+      };
+      scope.filterStrings = scope.filterStrings || defaultFilterStrings;
+
+      if (angular.isDefined(scope.searchSettingsCallback)) {
+        scope.showSettings = true;
+      } else {
+        scope.showSettings = false;
+      }
+    }
+
+    function compile(element) {
+      /**
+       * Need to set template here since MagicSearch template
+       * attribute is not interpolated. Can't hardcode the
+       * template location and need to use basePath.
+       */
+      var templateUrl = basePath + 'magic-search/magic-search.html';
+      element.find('magic-search').attr('template', templateUrl);
+      element.addClass('hz-magic-search-bar');
+      return link;
+    }
   }
 
 })();

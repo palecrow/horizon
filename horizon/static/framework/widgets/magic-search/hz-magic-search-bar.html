@@ -4,13 +4,10 @@
       <span class="fa fa-search"></span>
     </span>
     <magic-search
-      strings="filterStrings"
-      facets="{{ filterFacets }}">
+      class="hz-magic-search-bar"
+      strings="ctrl.filterStrings"
+      facets=""
+      query="ctrl.query">
     </magic-search>
-    <span ng-if="showSettings" class="input-group-btn" ng-click="searchSettingsCallback()">
-      <button class="btn btn-default" type="button">
-        <span class="fa fa-cog fa-lg"></span>
-      </button>
-    </span>
   </div>
 </div>

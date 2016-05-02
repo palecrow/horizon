@@ -22,26 +22,24 @@
  *
  */
 
-  angular.module('horizon.framework.widgets.magic-search')
+  angular.module('horizon.framework.widgets.legacy-magic-search')
     .directive('magicSearch', magicSearch);
 
-  magicSearch.$inject = [
-    'horizon.framework.widgets.basePath'
-  ];
+  magicSearch.$inject = [];
 
-  function magicSearch(basePath) {
+  function magicSearch() {
     return {
       restrict: 'E',
       scope: {
         facets_param: '@facets',
         filter_keys: '=filterKeys',
-        strings: '=',
-        facets: '=',
-        query: '='
+        strings: '=strings'
       },
-      templateUrl: basePath + 'magic-search/magic-search.html',
-      controller: 'MagicSearchController as ctrl',
-      bindToController: true
+      templateUrl: function (scope, elem) {
+        return elem.template;
+      },
+      controller: 'MagicSearchController',
+      controllerAs: 'ctrl'
     };
   }
 
