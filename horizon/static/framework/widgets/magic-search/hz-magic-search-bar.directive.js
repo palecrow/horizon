@@ -89,7 +89,8 @@
         filterStrings: '=?',
         filterFacets: '=',
         clientFullTextSearch: '=?',
-        query: '='
+        query: '=',
+        facets: '='
       },
       templateUrl: basePath + 'magic-search/hz-magic-search-bar.html',
       controller: "horizon.framework.widgets.magic-search.MagicSearchBarController as ctrl",

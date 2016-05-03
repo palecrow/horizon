@@ -85,6 +85,15 @@
      * Implementation
      */
 
+    var deregisterFacetsWatcher = $scope.$watch(function facetsWatch(scope) {
+      return scope.ctrl.facets;
+    }, function facetsWatchHandler( newValue, oldValue, scope) {
+      if ( newValue ) {
+        ctrl.facets_param = newValue;
+        initSearch([]);
+      }
+    }, true);
+
     function initSearch(initialSearchTerms) {
       // Initializes both the unused choices and the full list of facets
       ctrl.facetChoices = service.getFacetChoicesFromFacetsParam(ctrl.facets_param);
@@ -353,6 +362,7 @@
 
     $scope.$on('$destroy', function () {
       facetsChangedWatcher();
+      deregisterFacetsWatcher();
     });
 
     function initFacets(searchTerms) {
