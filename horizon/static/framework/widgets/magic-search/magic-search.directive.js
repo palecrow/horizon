@@ -37,7 +37,8 @@
         filter_keys: '=filterKeys',
         strings: '=',
         facets: '=',
-        query: '='
+        currentSearchText: '=',
+        currentSearchFacets: '='
       },
       templateUrl: basePath + 'magic-search/magic-search.html',
       controller: 'MagicSearchController as ctrl',
