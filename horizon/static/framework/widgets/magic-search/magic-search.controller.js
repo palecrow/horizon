@@ -86,11 +86,13 @@
      */
 
     var deregisterFacetsWatcher = $scope.$watch(function facetsWatch(scope) {
-      return scope.ctrl.facets;
+      return scope.ctrl.availableFacets;
     }, function facetsWatchHandler( newValue, oldValue, scope) {
       if ( newValue ) {
         ctrl.facets_param = newValue;
-        initSearch([]);
+        //initSearch([]);
+        // re-init to restore facets cleanly
+        initSearch(ctrl.currentSearch.map(service.getName));
       }
     }, true);
 
@@ -317,6 +319,7 @@
         resetState();
         $scope.$emit('searchUpdated', '');
         emitTextSearch('');
+        emitQuery();
       }
     }
 

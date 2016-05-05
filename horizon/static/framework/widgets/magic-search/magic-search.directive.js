@@ -36,7 +36,7 @@
         facets_param: '@',
         filter_keys: '=filterKeys',
         strings: '=',
-        facets: '=',
+        availableFacets: '=',
         currentSearchText: '=',
         currentSearchFacets: '='
       },

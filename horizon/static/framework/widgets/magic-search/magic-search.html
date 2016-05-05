@@ -6,14 +6,14 @@
       <span class="item-list">
         <span class="radius secondary item"
               ng-repeat="facet in ctrl.currentSearch" ng-cloak="cloak" ng-class="{'server-side-item': facet.isServer}">
-          <span data-toggle="tooltip" title="{$ ::strings.serverFacet $}"
+          <span data-toggle="tooltip" title="{$ ::ctrl.strings.serverFacet $}"
              ng-class="{'fa fa-server': facet.isServer}"></span>
-          <span data-toggle="tooltip" title="{$ ::strings.clientFacet $}"
+          <span data-toggle="tooltip" title="{$ ::ctrl.strings.clientFacet $}"
              ng-class="{'fa fa-desktop': !facet.isServer}"></span>
           <span>
             {$ ::facet.label[0] $}: <b>{$ ::facet.label[1] $}</b>
           </span>
-          <a class="remove" ng-click="ctrl.removeFacet($index, $event)" title="{$ ::strings.remove $}">
+          <a class="remove" ng-click="ctrl.removeFacet($index, $event)" title="{$ ::ctrl.strings.remove $}">
             <span class="fi-x fa fa-times"></span>
           </a>
         </span>
@@ -26,7 +26,7 @@
         <input class="search-input"
                type="text"
                dropdown-toggle
-               placeholder="{$ strings.prompt $}"
+               placeholder="{$ ctrl.strings.prompt $}"
                autocomplete="off"
                ng-keydown="ctrl.keyDownHandler($event)"
                ng-keyup="ctrl.keyUpHandler($event)"
@@ -54,7 +54,7 @@
         </ul>
       </span>
     </span>
-    <a class="magic-search-clear" ng-click="ctrl.clearSearch()" ng-show="ctrl.currentSearch.length &gt; 0" title="{$ ::strings.cancel $}">
+    <a class="magic-search-clear" ng-click="ctrl.clearSearch()" ng-show="ctrl.currentSearch.length &gt; 0" title="{$ ::ctrl.strings.cancel $}">
       <span class="fi-x fa fa-times cancel"></span>
     </a>
   </div>

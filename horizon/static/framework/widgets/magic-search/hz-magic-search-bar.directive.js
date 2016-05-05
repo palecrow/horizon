@@ -89,7 +89,7 @@
         filterStrings: '=?',
         filterFacets: '=',
         clientFullTextSearch: '=?',
-        facets: '=',
+        availableFacets: '=',
         currentSearchText: '=',
         currentSearchFacets: '='
       },
