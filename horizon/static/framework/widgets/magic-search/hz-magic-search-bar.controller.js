@@ -59,16 +59,6 @@
     /**
      * Implementation
      */
-    /*
-    var deregisterQueryWatcher = $scope.$watch(function queryWatch(scope) {
-      return scope.ctrl.query;
-    }, function queryWatchHandler( newValue, oldValue, scope) {
-      if ( newValue != oldValue ) {
-        search(newValue);
-      }
-    }, true);
-    */
-
   }
 
 })();

@@ -33,8 +33,6 @@
     return {
       restrict: 'E',
       scope: {
-        facets_param: '@',
-        filter_keys: '=filterKeys',
         strings: '=',
         availableFacets: '=',
         currentSearchText: '=',

@@ -29,76 +29,75 @@
     'horizon.framework.widgets.magic-search.service'];
 
   function magicSearchController($scope, $element, $timeout, $window, service) {
+    /**
+     * Private Data
+     */
     var ctrl = this;
+    // unusedFacetChoices is the list of facet types that have not been selected
+    var unusedFacetChoices = [];
+    // facetChoices is the list of all facet choices
+    var facetChoices = [];
+    // TODO - Remove this direct element reference from the controller
+    var searchInput = $element.find('.search-input');
 
     /**
      * Public Interface
      */
-    ctrl.keyDownHandler = keyDownHandler;
-    ctrl.keyUpHandler = keyUpHandler;
-    ctrl.keyPressHandler = keyPressHandler;
-    ctrl.searchMainClickHandler = searchMainClickHandler;
-    ctrl.facets_param = ctrl.facets_param || [];
+
+    ///// View specific model
     ctrl.mainPromptString = ctrl.strings ? ctrl.strings.prompt : '';
     // currentSearch is the list of facets representing the current search
     ctrl.currentSearch = [];
     ctrl.isMenuOpen = false;
+    ctrl.searchInputValue = '';
+
+    ///// View Event Handlers
+    ctrl.keyDownHandler = keyDownHandler;
+    ctrl.keyUpHandler = keyUpHandler;
+    ctrl.keyPressHandler = keyPressHandler;
 
     // when facet clicked, add 1st part of facet and set up options
     ctrl.onFacetSelected = onFacetSelected;
 
     // when option clicked, complete facet and send event
-    ctrl.onOptionSelected = onOptionSelected;
+    ctrl.onFacetOptionSelected = onFacetOptionSelected;
 
     // remove facet and either update filter or search
     ctrl.removeFacet = removeFacet;
 
-    // Controller-exposed Functions
-    // clear entire searchbar
+    // Clear entire search bar
     ctrl.clearSearch = clearSearch;
 
-    // ctrl.textSearch is undefined, only used when a user free-enters text
-
-    // Used by the template.
     ctrl.isMatchLabel = function(label) {
       return angular.isArray(label);
     };
 
-    // unusedFacetChoices is the list of facet types that have not been selected
-    ctrl.unusedFacetChoices = [];
-
-    // facetChoices is the list of all facet choices
-    ctrl.facetChoices = [];
-
-    ctrl.searchInputValue = '';
-
-    /**
-     * Private Data
-     */
-    // TODO - Remove this direct element reference from the controller
-    var searchInput = $element.find('.search-input');
-
-    initSearch(service.getSearchTermsFromQueryString($window.location.search));
-    emitQuery();
+    init();
 
     /**
      * Implementation
      */
 
-    var deregisterFacetsWatcher = $scope.$watch(function facetsWatch(scope) {
-      return scope.ctrl.availableFacets;
-    }, function facetsWatchHandler( newValue, oldValue, scope) {
-      if ( newValue ) {
-        ctrl.facets_param = newValue;
-        //initSearch([]);
-        // re-init to restore facets cleanly
-        initSearch(ctrl.currentSearch.map(service.getName));
-      }
-    }, true);
+    function init() {
+      // When the list of available facets changes, update the search bar
+      $scope.$watch(function facetsWatch(scope) {
+        return scope.ctrl.availableFacets;
+      }, function facetsWatchHandler( newValue, oldValue, scope) {
+        if ( newValue ) {
+          // re-init to merge updated facets with current search
+          initSearch(ctrl.currentSearch.map(service.getName));
+        }
+      }, true);
+
+      // If search terms are present in the URL, attempt to use them
+      initSearch(service.getSearchTermsFromQueryString($window.location.search));
+
+      updateCurrentSearchFacets();
+    }
 
     function initSearch(initialSearchTerms) {
       // Initializes both the unused choices and the full list of facets
-      ctrl.facetChoices = service.getFacetChoicesFromFacetsParam(ctrl.facets_param);
+      facetChoices = service.getFacetChoicesFromFacetsParam(ctrl.availableFacets);
 
       // resets the facets
       initFacets(initialSearchTerms);
@@ -108,74 +107,6 @@
       var key = service.getEventCode($event);
       if (key === 9) {  // prevent default when we can.
         $event.preventDefault();
-      }
-    }
-
-    function tabKeyUp() {
-      if (angular.isUndefined(ctrl.selectedFacet)) {
-        if (ctrl.filteredFacets.length !== 1) {
-          return;
-        }
-        ctrl.facetClicked(0, '', ctrl.filteredFacets[0].name);
-        setSearchInput('');
-      } else {
-        if (angular.isUndefined(ctrl.filteredFacetOptions) ||
-          ctrl.filteredFacetOptions.length !== 1) {
-          return;
-        }
-        ctrl.onOptionSelected(ctrl.filteredFacetOptions[0]);
-        resetState();
-      }
-    }
-
-    function escapeKeyUp() {
-      setMenuOpen(false);
-      resetState();
-      var textFilter = ctrl.textSearch;
-      if (angular.isUndefined(textFilter)) {
-        textFilter = '';
-      }
-      emitTextSearch(textFilter);
-    }
-
-    function enterKeyUp() {
-      var searchVal = ctrl.searchInputValue;
-      // if tag search, treat as regular facet
-      if (ctrl.selectedFacet && angular.isUndefined(ctrl.selectedFacet.options)) {
-        var curr = ctrl.selectedFacet;
-        curr.name = curr.name.split('=')[0] + '=' + searchVal;
-        curr.label[1] = searchVal;
-        ctrl.currentSearch.push(curr);
-        resetState();
-        emitQuery();
-        setMenuOpen(false);
-      } else {
-        // if text search treat as search
-        ctrl.currentSearch = ctrl.currentSearch.filter(notTextSearch);
-        ctrl.currentSearch.push(service.getTextFacet(searchVal,
-          ctrl.strings ? ctrl.strings.text : ''));
-        setMenuOpen(false);
-        setSearchInput('');
-        emitTextSearch(searchVal);
-        ctrl.textSearch = searchVal;
-      }
-      ctrl.filteredFacets = ctrl.unusedFacetChoices;
-    }
-
-    function notTextSearch(item) {
-      return item.name.indexOf('text') !== 0;
-    }
-
-    function defaultKeyUp() {
-      var searchVal = ctrl.searchInputValue;
-      if (searchVal === '') {
-        ctrl.filteredFacets = ctrl.unusedFacetChoices;
-        emitTextSearch('');
-        if (ctrl.selectedFacet && angular.isUndefined(ctrl.selectedFacet.options)) {
-          resetState();
-        }
-      } else {
-        filterFacets(searchVal);
       }
     }
 
@@ -201,13 +132,13 @@
         searchVal = searchVal + String.fromCharCode(key).toLowerCase();
       }
       if (searchVal === ' ') {  // space and field is empty, show menu
-        setMenuOpen(true);
-        setSearchInput('');
+        ctrl.isMenuOpen = true;
+        ctrl.searchInputValue = '';
         return;
       }
       if (searchVal === '') {
-        ctrl.filteredFacets = ctrl.unusedFacetChoices;
-        emitTextSearch('');
+        ctrl.filteredFacets = unusedFacetChoices;
+        ctrl.currentSearchText = '';
         if (ctrl.selectedFacet && angular.isUndefined(ctrl.selectedFacet.options)) {
           resetState();
         }
@@ -219,12 +150,81 @@
       }
     }
 
+
+    function tabKeyUp() {
+      if (angular.isUndefined(ctrl.selectedFacet)) {
+        if (ctrl.filteredFacets.length !== 1) {
+          return;
+        }
+        ctrl.onFacetSelected(ctrl.filteredFacets[0]);
+        ctrl.searchInputValue = '';
+      } else {
+        if (angular.isUndefined(ctrl.filteredFacetOptions) ||
+          ctrl.filteredFacetOptions.length !== 1) {
+          return;
+        }
+        ctrl.onFacetOptionSelected(ctrl.filteredFacetOptions[0]);
+        resetState();
+      }
+    }
+
+    function escapeKeyUp() {
+      ctrl.isMenuOpen = false;
+      resetState();
+      var textFilter = ctrl.textSearch;
+      if (angular.isUndefined(textFilter)) {
+        textFilter = '';
+      }
+      ctrl.currentSearchText = textFilter;
+    }
+
+    function enterKeyUp() {
+      var searchVal = ctrl.searchInputValue;
+      // if tag search, treat as regular facet
+      if (ctrl.selectedFacet && angular.isUndefined(ctrl.selectedFacet.options)) {
+        var curr = ctrl.selectedFacet;
+        curr.name = curr.name.split('=')[0] + '=' + searchVal;
+        curr.label[1] = searchVal;
+        ctrl.currentSearch.push(curr);
+        resetState();
+        updateCurrentSearchFacets();
+        ctrl.isMenuOpen = false;
+      } else {
+        // if text search treat as search
+        ctrl.currentSearch = ctrl.currentSearch.filter(notTextSearch);
+        ctrl.currentSearch.push(service.getTextFacet(searchVal,
+          ctrl.strings ? ctrl.strings.text : ''));
+        ctrl.isMenuOpen = false;
+        ctrl.searchInputValue = '';
+        ctrl.currentSearchText = searchVal;
+        ctrl.textSearch = searchVal;
+      }
+      ctrl.filteredFacets = unusedFacetChoices;
+    }
+
+    function notTextSearch(item) {
+      return item.name.indexOf('text') !== 0;
+    }
+
+    function defaultKeyUp() {
+      var searchVal = ctrl.searchInputValue;
+      if (searchVal === '') {
+        ctrl.filteredFacets = unusedFacetChoices;
+        ctrl.currentSearchText = '';
+        if (ctrl.selectedFacet && angular.isUndefined(ctrl.selectedFacet.options)) {
+          resetState();
+        }
+      } else {
+        filterFacets(searchVal);
+      }
+    }
+
     function filterFacets(searchVal) {
       // try filtering facets/options.. if no facets match, do text search
       var filtered = [];
       var isTextSearch = angular.isUndefined(ctrl.selectedFacet);
       if (isTextSearch) {
-        ctrl.filteredFacets = ctrl.unusedFacetChoices;
+        ctrl.filteredFacets = unusedFacetChoices;
         filtered = service.getMatchingFacets(ctrl.filteredFacets, searchVal);
       } else {  // assume option search
         ctrl.filteredFacetOptions = ctrl.selectedFacetOptions;
@@ -235,28 +235,18 @@
         filtered = service.getMatchingOptions(ctrl.filteredFacetOptions, searchVal);
       }
       if (filtered.length > 0) {
-        setMenuOpen(true);
+        ctrl.isMenuOpen = true;
         $timeout(function() {
           ctrl.filteredFacets = filtered;
         }, 0.1);
       } else if (isTextSearch) {
-        emitTextSearch(searchVal);
-        setMenuOpen(false);
+        ctrl.currentSearchText = searchVal;
+        ctrl.isMenuOpen = false;
       }
-    }
-
-    function searchMainClickHandler($event) {
-      /*
-      var target = angular.element($event.target);
-      if (target.is('.search-main-area')) {
-        searchInput.trigger('focus');
-        setMenuOpen(true);
-      }
-      */
     }
 
     function onFacetSelected(facet) {
-      setMenuOpen(false);
+      ctrl.isMenuOpen = false;
       var label = facet.label;
       if (angular.isArray(label)) {
         label = label.join('');
@@ -265,20 +255,15 @@
       ctrl.selectedFacet = service.getFacet(facetParts[0], facetParts[1], label, '');
       if (angular.isDefined(facet.options)) {
         ctrl.filteredFacetOptions = ctrl.selectedFacetOptions = facet.options;
-        setMenuOpen(true);
+        ctrl.isMenuOpen = true;
       }
-      setSearchInput('');
+      ctrl.searchInputValue = '';
       setPrompt('');
-      /*
-      $timeout(function() {
-        searchInput.focus();
-      });
-      */
     }
 
-    function onOptionSelected(option) {
+    function onFacetOptionSelected(option) {
       var name = option.key;
-      setMenuOpen(false);
+      ctrl.isMenuOpen = false;
       var curr = ctrl.selectedFacet;
       curr.name = curr.name.split('=')[0] + '=' + name;
       curr.label[1] = option.label;
@@ -287,27 +272,21 @@
       }
       ctrl.currentSearch.push(curr);
       resetState();
-      emitQuery();
+      updateCurrentSearchFacets();
     }
 
-    function emitTextSearch(val) {
-      //$scope.$emit('textSearch', val, ctrl.filter_keys);
-      ctrl.currentSearchText = val;
-    }
-
-    function emitQuery(removed) {
+    function updateCurrentSearchFacets(removed) {
       var query = service.getQueryPattern(ctrl.currentSearch);
       if (angular.isDefined(removed) && removed.indexOf('text') === 0) {
-        emitTextSearch('');
+        ctrl.currentSearchText = '';
         delete ctrl.textSearch;
       } else {
-        //$scope.$emit('searchUpdated', query);
         ctrl.currentSearchFacets = query;
         if (ctrl.currentSearch.length > 0) {
           // prune facets as needed from menus
           var newFacet = ctrl.currentSearch[ctrl.currentSearch.length - 1].name;
           var facetParts = service.getSearchTermObject(newFacet);
-          service.removeChoice(facetParts, ctrl.facetChoices, ctrl.unusedFacetChoices);
+          service.removeChoice(facetParts, facetChoices, unusedFacetChoices);
         }
       }
     }
@@ -315,17 +294,16 @@
     function clearSearch() {
       if (ctrl.currentSearch.length > 0) {
         ctrl.currentSearch = [];
-        ctrl.unusedFacetChoices = ctrl.facetChoices.map(service.getFacetChoice);
+        unusedFacetChoices = facetChoices.map(service.getFacetChoice);
         resetState();
-        $scope.$emit('searchUpdated', '');
-        emitTextSearch('');
-        emitQuery();
+        ctrl.currentSearchText  = '';
+        updateCurrentSearchFacets();
       }
     }
 
     function resetState() {
-      setSearchInput('');
-      ctrl.filteredFacets = ctrl.unusedFacetChoices;
+      ctrl.searchInputValue = '';
+      ctrl.filteredFacets = unusedFacetChoices;
       delete ctrl.selectedFacet;
       delete ctrl.selectedFacetOptions;
       delete ctrl.filteredFacetOptions;
@@ -334,61 +312,29 @@
       }
     }
 
-    function setMenuOpen(bool) {
-      ctrl.isMenuOpen = bool;
-    }
-
-    // TODO - Remove this function if timeout isn't actually needed
-    function setSearchInput(val) {
-      $timeout(function setSearchInputTimeout() {
-        ctrl.searchInputValue = val;
-      });
-    }
-
-    function setPrompt(str) {
-      $timeout(function setPromptTimeout() {
-        ctrl.strings.prompt = str;
-      });
-    }
-
     /**
-     * Add ability to update facet
-     * Broadcast event when facet options are returned via AJAX.
-     * Should magic_search.js absorb this?
+     * Convience function to set the search prompt
+     *
+     * @param str - the prompt string
      */
-    var facetsChangedWatcher = $scope.$on('facetsChanged', function (event, data) {
-      $timeout(function () {
-        if (data && data.magicSearchQuery) {
-          initSearch(data.magicSearchQuery.split('&'));
-        } else {
-          initSearch(ctrl.currentSearch.map(function(x) { return x.name; }));
-        }
-      });
-    });
-
-    $scope.$on('$destroy', function () {
-      facetsChangedWatcher();
-      deregisterFacetsWatcher();
-    });
+    function setPrompt(str) {
+      ctrl.strings.prompt = str;
+    }
 
     function initFacets(searchTerms) {
-      var tmpFacetChoices = ctrl.facetChoices.map(service.getFacetChoice);
+      var tmpFacetChoices = facetChoices.map(service.getFacetChoice);
       if (searchTerms.length > 1 || searchTerms[0] && searchTerms[0].length > 0) {
         setPrompt('');
       }
+      ctrl.filteredFacets = unusedFacetChoices =
+        service.getUnusedFacetChoices(tmpFacetChoices, searchTerms);
       ctrl.currentSearch = service.getFacetsFromSearchTerms(searchTerms,
         ctrl.textSearch, ctrl.strings ? ctrl.strings.text : '', tmpFacetChoices);
-      ctrl.filteredFacets = ctrl.unusedFacetChoices =
-        service.getUnusedFacetChoices(tmpFacetChoices, searchTerms);
-
-      // emit to check facets for server-side
-      $scope.$emit('checkFacets', ctrl.currentSearch);
     }
 
     /**
-     * Override magic_search.js 'removeFacet' to emit('checkFacets')
-     * to flag facets as 'isServer' after removing facet and
-     * either update filter or search
+     * Remove a facet from the current search
+     *
      * @param {number} index - the index of the facet to remove. Required.
      *
      * @returns {number} Doesn't return anything
@@ -397,7 +343,7 @@
       var removed = ctrl.currentSearch[index].name;
       ctrl.currentSearch.splice(index, 1);
       if (angular.isUndefined(ctrl.selectedFacet)) {
-        emitQuery(removed);
+        updateCurrentSearchFacets(removed);
       } else {
         resetState();
       }

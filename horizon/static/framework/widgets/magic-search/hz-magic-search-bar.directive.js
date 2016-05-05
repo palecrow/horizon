@@ -87,7 +87,6 @@
       restrict: 'E',
       scope: {
         filterStrings: '=?',
-        filterFacets: '=',
         clientFullTextSearch: '=?',
         availableFacets: '=',
         currentSearchText: '=',
